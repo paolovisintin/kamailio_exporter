@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/florentchauveau/go-kamailio-binrpc/v2"
+	binrpc "github.com/florentchauveau/go-kamailio-binrpc/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
@@ -108,6 +108,11 @@ var (
 	dialog = prometheus.NewDesc(
 		"kamailio_dialog",
 		"Ongoing Dialogs",
+		[]string{"type"}, nil)
+
+	usrloc = prometheus.NewDesc(
+		"kamailio_usrloc",
+		"User Locations",
 		[]string{"type"}, nil)
 )
 
@@ -335,6 +340,12 @@ func produceMetrics(completeStatMap map[string]string, metricChannel chan<- prom
 	convertStatToMetric(completeStatMap, "dialog.expired_dialogs", "expired_dialogs", dialog, metricChannel, prometheus.CounterValue)
 	convertStatToMetric(completeStatMap, "dialog.failed_dialogs", "failed_dialogs", dialog, metricChannel, prometheus.CounterValue)
 	convertStatToMetric(completeStatMap, "dialog.processed_dialogs", "processed_dialogs", dialog, metricChannel, prometheus.CounterValue)
+
+	// kamailio_usrloc
+	convertStatToMetric(completeStatMap, "usrloc.location-contacts", "location-contacts", usrloc, metricChannel, prometheus.CounterValue)
+	convertStatToMetric(completeStatMap, "usrloc.location-expires", "location-expires", usrloc, metricChannel, prometheus.CounterValue)
+	convertStatToMetric(completeStatMap, "usrloc.location-users", "location-users", usrloc, metricChannel, prometheus.CounterValue)
+	convertStatToMetric(completeStatMap, "usrloc.registered_users", "registered_users", usrloc, metricChannel, prometheus.CounterValue)
 }
 
 // Iterate all reported "stats" keys and find those with a prefix of "script."
